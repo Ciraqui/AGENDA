@@ -28,7 +28,15 @@ const historicoController = {
   },
   buscarHistoricos: async (_, res) => {
     try {
-      const historicos = await prisma.historico.findMany();
+      const historicos = await prisma.historico.findMany({
+        include: {
+          prescricao: {
+              include: {
+                  remedio: true
+              }
+          }
+      }
+      });
 
       if (!historicos.length) {
         res.status(404).json({ error: "Lista de historicos vazia!" });

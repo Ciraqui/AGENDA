@@ -36,19 +36,57 @@
             <div class="col-md-6">
                 <h2>Prescrições Ativas</h2>
                 <ul id="prescricoesAtivas" class="list-group">
-                    <!-- Prescrições ativas serão carregadas aqui -->
+                    <!-- Prescrições ativas são carregadas aqui -->
                 </ul>
             </div>
             <div class="col-md-6">
                 <h2>Próximos Medicamentos</h2>
                 <ul id="proximosMedicamentos" class="list-group">
-                    <!-- Próximos medicamentos serão carregados aqui -->
+                    <!-- Próximos medicamentos são carregados aqui -->
                 </ul>
             </div>
         </div>
     </div>
 
     <script src="js/auth.js"></script>
-    <script src="js/dashboard.js"></script>
+    <script>
+        async function carregarDados() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+
+                const responsePrescricoes = await fetch('http://localhost:3000/api/prescricao', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!responsePrescricoes.ok) {
+                    throw new Error('Erro ao carregar prescrições');
+                }
+
+                const prescricoesAtivas = await responsePrescricoes.json();
+                const prescricoesList = document.getElementById('prescricoesAtivas');
+                prescricoesList.innerHTML = '';
+
+                prescricoesAtivas.forEach(prescricao => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'list-group-item';
+                    listItem.textContent = `Medicamento: ${prescricao.remedio.nome}, Frequência: ${prescricao.frequencia}`;
+                    prescricoesList.appendChild(listItem);
+                });
+
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao carregar dados do dashboard');
+            }
+        }
+
+        // Chama a função quando a página carregar
+        document.addEventListener('DOMContentLoaded', carregarDados);
+    </script>
 </body>
 </html>

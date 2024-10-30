@@ -6,6 +6,13 @@ const usuarioController = {
     try {
       const { nome, email, senha, dt_nascimento } = req.body;
 
+      const usuarioExistente = await prisma.usuario.findUnique({
+        where: { email }
+      });
+      if (usuarioExistente) {
+        return res.status(400).json({ error: "Email já cadastrado!" });
+      }
+
       const senhaCriptografada = await bcrypt.hash(senha, 10);
 
       const novoUsuario = await prisma.usuario.create({

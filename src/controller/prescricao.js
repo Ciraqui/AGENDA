@@ -48,7 +48,13 @@ const prescricaoController = {
           id_usuario: parseInt(userId)
         },
         include: {
-          remedio: true
+          remedio: true,
+          usuario: {
+            select: {
+                nome: true,
+                email: true
+            }
+        }
         }
       });
 
