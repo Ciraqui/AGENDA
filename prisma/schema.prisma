@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id            Int       @id @default(autoincrement())
+  nome          String
+  email         String    @unique
+  senha         String
+  dt_nascimento DateTime?
+  status        Boolean   @default(false)
+  role          String    @default("user")
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @default(now()) @updatedAt
+
+  prescricoes Prescricao[]
+}
+
+model Prescricao {
+  id         Int       @id @default(autoincrement())
+  id_usuario Int
+  observacao String?
+  id_remedio Int
+  frequencia Int
+  dt_inicio  DateTime
+  dt_fim     DateTime?
+  status     Boolean
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now()) @updatedAt
+
+  usuario Usuario @relation(fields: [id_usuario], references: [id])
+  remedio Remedio @relation(fields: [id_remedio], references: [id])
+
+  historicos Historico[]
+}
+
+model Historico {
+  id            Int      @id @default(autoincrement())
+  id_prescricao Int
+  dt_atual      DateTime
+  status        Boolean
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now()) @updatedAt
+
+  prescricao Prescricao @relation(fields: [id_prescricao], references: [id])
+}
+
+model Remedio {
+  id         Int      @id @default(autoincrement())
+  nome       String
+  funcao     String
+  dosagem    Float
+  status     Boolean
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  prescricoes Prescricao[]
+}
