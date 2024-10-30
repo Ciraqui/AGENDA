@@ -13,7 +13,7 @@
     </nav>
 
     <div class="container mt-5">
-        <h1>Remédios</h1>
+        <h1>Meus Remédios</h1>
         <button class="btn btn-primary mb-3" onclick="mostrarFormularioRemedio()">Adicionar Remédio</button>
         
         <div id="listaRemedios">
@@ -28,12 +28,8 @@
                     <input type="text" class="form-control" id="nome" required>
                 </div>
                 <div class="mb-3">
-                    <label for="funcao" class="form-label">Função</label>
-                    <input type="text" class="form-control" id="funcao" required>
-                </div>
-                <div class="mb-3">
-                    <label for="dosagem" class="form-label">Dosagem</label>
-                    <input type="number" class="form-control" id="dosagem" required>
+                    <label for="descricao" class="form-label">Descrição</label>
+                    <textarea class="form-control" id="descricao"></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">Salvar</button>
             </form>
@@ -41,6 +37,107 @@
     </div>
 
     <script src="js/auth.js"></script>
-    <script src="js/remedios.js"></script>
+    <script>
+        async function carregarRemedios() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('http://localhost:3000/api/remedio', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar remédios');
+                }
+
+                const remedios = await response.json();
+                const lista = document.getElementById('listaRemedios');
+                lista.innerHTML = '';
+
+                remedios.forEach(remedio => {
+                    const div = document.createElement('div');
+                    div.className = 'card mb-3';
+                    div.innerHTML = `
+                        <div class="card-body">
+                            <h5 class="card-title">${remedio.nome}</h5>
+                            <p class="card-text">${remedio.descricao}</p>
+                            <button class="btn btn-danger btn-sm" onclick="deletarRemedio(${remedio.id})">Excluir</button>
+                        </div>
+                    `;
+                    lista.appendChild(div);
+                });
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao carregar remédios');
+            }
+        }
+
+        function mostrarFormularioRemedio() {
+            document.getElementById('formularioRemedio').style.display = 'block';
+        }
+
+        document.getElementById('formRemedio').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                const token = localStorage.getItem('token');
+                const dados = {
+                    nome: document.getElementById('nome').value,
+                    descricao: document.getElementById('descricao').value,
+                    id_usuario: JSON.parse(atob(token.split('.')[1])).id
+                };
+
+                const response = await fetch('http://localhost:3000/api/remedio', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(dados)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao criar remédio');
+                }
+
+                alert('Remédio criado com sucesso!');
+                document.getElementById('formularioRemedio').style.display = 'none';
+                document.getElementById('formRemedio').reset();
+                carregarRemedios();
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao criar remédio');
+            }
+        });
+
+        async function deletarRemedio(id) {
+            if (!confirm('Tem certeza que deseja excluir este remédio?')) {
+                return;
+            }
+
+            try {
+                const token = localStorage .getItem('token');
+                const response = await fetch(`http://localhost:3000/api/remedio/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao excluir remédio');
+                }
+
+                alert('Remédio excluído com sucesso!');
+                carregarRemedios();
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao excluir remédio');
+            }
+        }
+
+        carregarRemedios();
+    </script>
 </body>
 </html>

@@ -51,6 +51,145 @@
     </div>
 
     <script src="js/auth.js"></script>
-    <script src="js/prescricoes.js"></script>
+    <script>
+        async function carregarRemedios() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('http://localhost:3000/api/remedio', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar remédios');
+                }
+
+                const remedios = await response.json();
+                const select = document.getElementById('idRemedio');
+                select.innerHTML = '';
+
+                remedios.forEach(remedio => {
+                    const option = document.createElement('option');
+                    option.value = remedio.id;
+                    option.textContent = remedio.nome;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao carregar lista de remédios');
+            }
+        }
+
+        async function carregarPrescricoes() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('http://localhost:3000/api/prescricao', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar prescrições');
+                }
+
+                const prescricoes = await response.json();
+                const lista = document.getElementById('listaPrescricoes');
+                lista.innerHTML = '';
+
+                prescricoes.forEach(prescricao => {
+                    const div = document.createElement('div');
+                    div.className = 'card mb-3';
+                    div.innerHTML = `
+                        <div class="card-body">
+                            <h5 class="card-title">${prescricao.remedio.nome}</h5>
+                            <p class="card-text">
+                                Frequência: ${prescricao.frequencia}<br>
+                                Data Início: ${new Date(prescricao.dt_inicio).toLocaleDateString()}<br>
+                                ${prescricao.dt_fim ? `Data Fim: ${new Date(prescricao.dt_fim).toLocaleDateString()}<br>` : ''}
+                                ${prescricao.observacao ? `Observação: ${prescricao.observacao}` : ''}
+                            </p>
+                            <button class="btn btn-danger btn-sm" onclick="deletarPrescricao(${prescricao.id})">Excluir</button>
+                        </div>
+                    `;
+                    lista.appendChild(div);
+                });
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao carregar prescrições');
+            }
+        }
+
+        function mostrarFormularioPrescricao() {
+            document.getElementById('formularioPrescricao').style.display = 'block';
+            carregarRemedios();
+        }
+
+        document.getElementById('formPrescricao').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                const token = localStorage.getItem('token');
+                const dados = {
+                    id_remedio: parseInt(document.getElementById('idRemedio').value),
+                    frequencia: parseInt(document.getElementById('frequencia').value),
+                    dt_inicio: document.getElementById('dtInicio').value,
+                    dt_fim: document.getElementById('dtFim').value || null,
+                    observacao: document.getElementById('observacao').value,
+                    id_usuario: JSON.parse(atob(token.split('.')[1])).id
+                };
+
+                const response = await fetch('http://localhost:3000/api/prescricao', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(dados)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao criar prescrição');
+                }
+
+                alert('Prescrição criada com sucesso!');
+                document.getElementById('formularioPrescricao').style.display = 'none';
+                document.getElementById('formPrescricao').reset();
+                carregarPrescricoes();
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao criar prescrição');
+            }
+        });
+
+        async function deletarPrescricao(id) {
+            if (!confirm('Tem certeza que deseja excluir esta prescrição?')) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:3000/api/prescricao/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(' Erro ao excluir prescrição');
+                }
+
+                alert('Prescrição excluída com sucesso!');
+                carregarPrescricoes();
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao excluir prescrição');
+            }
+        }
+
+        carregarPrescricoes();
+    </script>
 </body>
 </html>
