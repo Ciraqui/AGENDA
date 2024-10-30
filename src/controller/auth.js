@@ -4,19 +4,27 @@ const jwtConfig = require('./../config/jwtConfig');
 
 const authController = {
   login: async (req, res) => {
-    const { email, senha } = req.body;
+    try {
+      const { email, senha } = req.body;
+      const usuario = await prisma.usuario.findUnique({ where: { email } });
 
-    const usuario = await prisma.usuario.findUnique({ where: { email } });
+      if (!usuario) {
+          return res.status(401).json({ message: 'Credenciais inválidas!' });
+      }
 
-    const senhasConferem = await bcrypt.compare(senha, usuario.senha);
+      const senhasConferem = await bcrypt.compare(senha, usuario.senha);
 
-    if (!usuario || !senhasConferem) {
-      return res.status(401).json({ message: 'Credenciais inválidas!' });
-    }
+      if (!senhasConferem) {
+          return res.status(401).json({ message: 'Credenciais inválidas!' });
+      }
 
-    const token = jwtConfig.generateToken(usuario.id, usuario.role);
+      const token = jwtConfig.generateToken(usuario.id, usuario.role);
 
-    return res.status(200).json({ token });
+      return res.status(200).json({ token });
+  } catch (error) {
+      console.error('Erro no login:', error);
+      return res.status(500).json({ message: 'Erro interno do servidor' });
+  }
   },
   autenticarToken: async (req, res, next) => {
     const authHeader = req.headers['authorization'];

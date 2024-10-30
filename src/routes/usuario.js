@@ -34,7 +34,7 @@ const router = express.Router();
  *      400:
  *        description: Falha ao criar o usuáro
 */
-router.post("/", authController.autenticarToken, userController.criarUsuario);
+router.post("/", userController.criarUsuario);
 
 
 /** 
