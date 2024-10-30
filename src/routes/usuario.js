@@ -5,7 +5,7 @@ const checkRole = require('../middleware/roleMiddleware');
 const router = express.Router();
 /** 
  * @swagger
- * /usuario:
+ * /api/usuario:
  *  post: 
  *    summary: Cria um novo usuário
  *    description: Adiciona um novo usuário ao sistema com base nas informações fornecidas.
@@ -39,7 +39,7 @@ router.post("/", authController.autenticarToken, userController.criarUsuario);
 
 /** 
  * @swagger
- * /usuario:
+ * /api/usuario:
  *  get: 
  *    summary: Busca todos os usuários
  *    description: Busca todos os usuários cadastrados.
@@ -53,7 +53,7 @@ router.get("/", authController.autenticarToken, userController.buscarUsuarios);
 
 /** 
  * @swagger
- * /usuario/{id}:
+ * /api/usuario/{id}:
  *  get: 
  *    summary: Busca um usuário
  *    description: Busca um usuário pelo id.
@@ -74,7 +74,7 @@ router.get("/:id", authController.autenticarToken, checkRole('user'), userContro
 
 /** 
  * @swagger
- * /usuario/{id}:
+ * /api/usuario/{id}:
  *  patch: 
  *    summary: Atualiza os dados do usuário
  *    description: Atualiza uma ou todas as informações do usuário.
@@ -116,7 +116,7 @@ router.patch("/:id", authController.autenticarToken, userController.atualizarUsu
 
 /** 
  * @swagger
- * /usuario/{id}:
+ * /api/usuario/{id}:
  *  delete: 
  *    summary: Deleta um usuário
  *    description: Deleta um usuário a partir de um id.

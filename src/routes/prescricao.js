@@ -4,7 +4,7 @@ const authController = require('../controller/auth');
 const router = express.Router();
 /** 
  * @swagger
- * /prescricao:
+ * /api/prescricao:
  *  post: 
  *    summary: Cria uma nova prescrição
  *    description: Adiciona uma nova prescrição ao sistema com base nas informações fornecidas.
@@ -43,21 +43,21 @@ router.post('/', authController.autenticarToken, prescricaoController.criarPresc
 
 /** 
  * @swagger
- * /prescricao:
+ * /api/prescricao:
  *  get: 
- *    summary: Busca todos as prescrição
- *    description: Busca todos as prescrição cadastradas.
+ *    summary: Busca todas as prescrições
+ *    description: Busca todas as prescrições cadastradas.
  *    responses:
  *      200:
- *        description: Sucesso ao buscar as presscrição
+ *        description: Sucesso ao buscar as prescrições
  *      404:
- *        description: Prescrição não encontradas
+ *        description: prescrições não encontradas
 */
 router.get('/', authController.autenticarToken, prescricaoController.buscarPrescricoes);
 
 /** 
  * @swagger
- * /prescricao/{id}:
+ * /api/prescricao/{id}:
  *  get: 
  *    summary: Busca uma prescrição
  *    description: Busca uma prescrição pelo id.
@@ -79,7 +79,7 @@ router.get('/:id', authController.autenticarToken, prescricaoController.buscarPr
 
 /** 
  * @swagger
- * /prescricao/{id}:
+ * /api/prescricao/{id}:
  *  patch: 
  *    summary: Atualiza os dados da prescrição
  *    description: Atualiza uma ou todas as informações da prescrição.
@@ -130,7 +130,7 @@ router.patch('/:id', authController.autenticarToken, prescricaoController.atuali
 
 /** 
  * @swagger
- * /prescricao/{id}:
+ * /api/prescricao/{id}:
  *  delete: 
  *    summary: Deleta uma prescrição
  *    description: Deleta uma prescrição a partir de um id.
@@ -143,9 +143,9 @@ router.patch('/:id', authController.autenticarToken, prescricaoController.atuali
  *        description: Id da prescrição
  *    responses:
  *      200:
- *        description: Prescrição deletado com sucesso
+ *        description: Prescrição deletada com sucesso
  *      404:
- *        description: Prescrição não encontrado
+ *        description: Prescrição não encontrada
 */
 router.delete('/:id', authController.autenticarToken, prescricaoController.deletarPrescricao);
 

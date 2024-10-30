@@ -5,7 +5,7 @@ const router = express.Router();
 
 /** 
  * @swagger
- * /remedio:
+ * /api/remedio:
  *  post: 
  *    summary: Cria um novo remédio
  *    description: Adiciona um novo remédio ao sistema com base nas informações fornecidas.
@@ -35,7 +35,7 @@ router.post('/', authController.autenticarToken, remedioController.criarRemedio)
 
 /** 
  * @swagger
- * /remedio:
+ * /api/remedio:
  *  get: 
  *    summary: Busca todos os remédios
  *    description: Busca todos os remédios cadastrados.
@@ -49,7 +49,7 @@ router.get('/', authController.autenticarToken, remedioController.buscarRemedios
 
 /** 
  * @swagger
- * /remedio/{id}:
+ * /api/remedio/{id}:
  *  get: 
  *    summary: Busca um remédio
  *    description: Busca um remédio pelo id.
@@ -70,7 +70,7 @@ router.get('/:id', authController.autenticarToken, remedioController.buscarRemed
 
 /** 
  * @swagger
- * /remedio/{id}:
+ * /api/remedio/{id}:
  *  patch: 
  *    summary: Atualiza os dados do remédio
  *    description: Atualiza uma ou todas as informações do remédio.
@@ -109,7 +109,7 @@ router.patch('/:id', authController.autenticarToken, remedioController.atualizar
 
 /** 
  * @swagger
- * /remedio/{id}:
+ * /api/remedio/{id}:
  *  delete: 
  *    summary: Deleta um remédio
  *    description: Deleta um remédio a partir de um id.
