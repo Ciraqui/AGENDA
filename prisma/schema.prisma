@@ -43,6 +43,9 @@ model Prescricao {
   remedio Remedio @relation(fields: [id_remedio], references: [id])
 
   historicos Historico[]
+
+  @@index([id_usuario])
+  @@index([id_remedio])
 }
 
 model Historico {

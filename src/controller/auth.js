@@ -27,17 +27,24 @@ const authController = {
   }
   },
   autenticarToken: async (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (token == null) return res.sendStatus(401);
-
     try {
-      const user = jwtConfig.verifyToken(token);
-      req.user = user;
-      next();
+        const authHeader = req.headers['authorization'];
+        const token = authHeader && authHeader.split(' ')[1];
+
+        if (!token) {
+            return res.status(401).json({ error: "Token não fornecido!" });
+        }
+
+        const decoded = jwtConfig.verifyToken(token);
+        
+        if (Date.now() >= decoded.exp * 1000) {
+            return res.status(401).json({ error: "Token expirado!" });
+        }
+
+        req.user = decoded;
+        next();
     } catch (error) {
-      return res.sendStatus(403);
+        return res.status(403).json({ error: "Token inválido!" });
     }
   },
   logout: async (req, res) => {

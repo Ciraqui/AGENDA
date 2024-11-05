@@ -28,18 +28,18 @@ const remedioController = {
       return res.status(500).json({ error: 'Erro interno do servidor!' });
     }
   },
-  buscarRemedios: async (_, res) => {
+  buscarRemedios: async (req, res) => {
     try {
-      const remedios = await prisma.remedio.findMany();
-
-      if (!remedios.length) {
-        res.status(404).json({ error: "Lista de remedios vazia!" });
-        return;
-      }
-
+      const remedios = await prisma.remedio.findMany({
+        where: {
+            status: true
+        }
+      });
+        
       res.status(200).json(remedios);
     } catch (e) {
-      res.status(400).json({ error: 'Erro ao buscar os remedios!' })
+        console.error('Erro ao buscar os remedios:', e);
+        res.status(500).json({ error: 'Erro interno do servidor' })
     }
   },
   buscarRemedio: async (req, res) => {
@@ -85,12 +85,10 @@ const remedioController = {
         data: {
           nome: nome ?? remedio.nome,
           funcao: funcao ?? remedio.funcao,
-          dosagem: parseFloat(dosagem) ?? remedio.dosagem,
-          status: status ?? remedio.status,
+          dosagem: dosagem !== undefined ? parseFloat(dosagem) : remedio.dosagem,
+          status: status !== undefined ? status : remedio.status,
         },
-        where: {
-          id
-        }
+        where: {id}
       });
 
       return res.status(200).json(remedioAtualizado);

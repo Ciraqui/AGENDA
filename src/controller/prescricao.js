@@ -30,7 +30,7 @@ const prescricaoController = {
 
       return res.status(201).json(prescricao);
     } catch (e) {
-      console.error('Erro ao cadastrar a prescricao!');
+      console.error('Erro ao cadastrar a prescricao!', e);
       return res.status(500).json({ error: 'Erro interno do servidor!' });
     }
   },
@@ -45,7 +45,8 @@ const prescricaoController = {
 
       const prescricoes = await prisma.prescricao.findMany({
         where: {
-          id_usuario: parseInt(userId)
+          id_usuario: parseInt(userId),
+          status: true
         },
         include: {
           remedio: true,
