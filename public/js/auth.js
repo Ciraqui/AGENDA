@@ -108,7 +108,6 @@ function requireAuth() {
 // Função para fazer requisições autenticadas
 async function authFetch(url, options = {}) {
     const token = getAuthToken();
-    
     const defaultOptions = {
         headers: {
             'Authorization': `Bearer ${token}`,

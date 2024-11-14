@@ -90,10 +90,11 @@
         async function carregarRemedios() {
         try {
             const response = await authFetch('http://localhost:3000/api/remedio');
-        if (!response.ok) {
-            throw new Error('Erro ao carregar remédios');
-        }
+            if (!response.ok) {
+                throw new Error('Erro ao carregar remédios');
+            }
             const remedios = await response.json();
+            console.log('Remédios carregados:', remedios);
             const select = document.getElementById('idRemedio');
             select.innerHTML = '';
 
@@ -149,12 +150,14 @@
         function mostrarFormularioPrescricao() {
             document.getElementById('formularioPrescricao').style.display = 'block';
             carregarRemedios();
+            carregarUsuarios();
         }
 
         document.getElementById('formPrescricao').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             try {
+                const token = getAuthToken()
                 const dados = {
                     id_remedio: parseInt(document.getElementById('idRemedio').value),
                     frequencia: parseInt(document.getElementById('frequencia').value),
@@ -164,7 +167,7 @@
                     id_usuario: JSON.parse(atob(token.split('.')[1])).id
                 };
 
-                const response = authFetch('http://localhost:3000/api/prescricao', {
+                const response = await authFetch('http://localhost:3000/api/prescricao', {
                     method: 'POST',
                     body: JSON.stringify(dados)
                 });
@@ -204,6 +207,30 @@
                 alert('Erro ao excluir prescrição');
             }
         }
+
+        async function carregarUsuarios() {
+        try {
+            const response = await authFetch('http://localhost:3000/api/usuario'); // Ajuste a URL se necessário
+
+            if (!response.ok) {
+                throw new Error('Erro ao carregar usuários');
+            }
+
+            const usuarios = await response.json();
+            const select = document.getElementById('idUsuario'); // Certifique-se de que o ID está correto
+            select.innerHTML = '';
+
+            usuarios.forEach(usuario => {
+                const option = document.createElement('option');
+                option.value = usuario.id; // Ajuste se o campo ID for diferente
+                option.textContent = usuario.nome; // Ajuste se o campo nome for diferente
+                select.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro ao carregar lista de usuários');
+        }
+    }
 
         carregarPrescricoes();
     </script>
